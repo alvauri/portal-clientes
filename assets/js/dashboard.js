@@ -1,6 +1,7 @@
 // assets/js/dashboard.js
 
 let currentUserEmail = '';
+let currentSelectedService = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   const { data: { session }, error } = await _supabase.auth.getSession();
@@ -27,12 +28,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const nameInput = document.getElementById('update-fullname');
   if (nameInput) nameInput.value = user.user_metadata?.full_name || '';
 
-  // CARGAR SERVICIOS REALES DESDE SUPABASE
-  let currentSelectedService = null;
+  // Cargar datos desde Supabase
+  await loadCustomerServices();
+  await loadCustomerTickets();
+});
+
+/* --- MÓDULO DE SERVICIOS --- */
 
 // Cargar servicios desde Supabase y habilitar evento de clic
 async function loadCustomerServices() {
   const container = document.getElementById('service-container');
+  if (!container) return;
 
   const { data: services, error } = await _supabase
     .from('services')
@@ -50,7 +56,7 @@ async function loadCustomerServices() {
     return;
   }
 
-  // Guardamos la lista en window para acceder rápidamente al hacer clic
+  // Guardamos la lista globalmente para acceder al hacer clic
   window.customerServicesList = services;
 
   container.innerHTML = services.map((service, index) => {
@@ -70,7 +76,8 @@ async function loadCustomerServices() {
   }).join('');
 }
 
-/* --- Control del Modal de Detalle de Servicio --- */
+/* --- CONTROL DEL MODAL DE DETALLE DE SERVICIO --- */
+
 function openServiceModal(index) {
   const service = window.customerServicesList[index];
   if (!service) return;
@@ -101,60 +108,137 @@ function openServiceModal(index) {
 }
 
 function closeServiceModal() {
-  document.getElementById('service-detail-modal').classList.add('hidden');
+  const modal = document.getElementById('service-detail-modal');
+  if (modal) modal.classList.add('hidden');
   currentSelectedService = null;
 }
 
-function openTicketFromService() {
-  alert(`Abriendo solicitud de soporte para: ${currentSelectedService?.title}`);
-  closeServiceModal();
-}
-  await loadCustomerServices();
-});
+/* --- MÓDULO DE TICKETS DE SOPORTE --- */
 
-// Función para obtener e inyectar los servicios
-async function loadCustomerServices() {
-  const container = document.getElementById('service-container');
+async function loadCustomerTickets() {
+  const container = document.getElementById('tickets-container');
+  if (!container) return;
 
-  // Supabase filtra automáticamente los datos por el user_id logueado gracias al RLS
-  const { data: services, error } = await _supabase
-    .from('services')
+  const { data: tickets, error } = await _supabase
+    .from('tickets')
     .select('*')
-    .order('created_at', { ascending: true });
+    .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Error al cargar servicios:', error);
-    container.innerHTML = `<li style="color: var(--danger); text-align: center;">Error al cargar tus servicios.</li>`;
+    console.error('Error al cargar tickets:', error);
+    container.innerHTML = `<li style="color: var(--danger); text-align: center;">Error al cargar tickets.</li>`;
     return;
   }
 
-  if (!services || services.length === 0) {
-    container.innerHTML = `<li style="color: var(--text-muted); text-align: center;">No tienes servicios activos asignados por el momento.</li>`;
+  if (!tickets || tickets.length === 0) {
+    container.innerHTML = `<li style="color: var(--text-muted); text-align: center; cursor: default;">No tienes tickets de soporte registrados.</li>`;
     return;
   }
 
-  // Renderizado dinámico del HTML
-  container.innerHTML = services.map(service => {
-    const statusLower = service.status.toLowerCase();
-    const isActive = statusLower === 'activo' || statusLower === 'al día';
-    const badgeClass = isActive ? 'badge active' : 'badge';
+  container.innerHTML = tickets.map(ticket => {
+    const isClosed = ticket.status.toLowerCase() === 'resuelto';
+    const badgeClass = isClosed ? 'badge active' : 'badge';
 
     return `
-      <li>
+      <li style="cursor: default;">
         <div class="service-item">
-          <span class="material-symbols-outlined icon">${service.icon || 'language'}</span>
-          <span>${service.title}</span>
+          <span class="material-symbols-outlined icon">confirmation_number</span>
+          <div>
+            <strong style="display: block; font-size: 0.95rem;">${ticket.subject}</strong>
+            <small style="color: var(--text-muted); font-size: 0.8rem;">Prioridad: ${ticket.priority}</small>
+          </div>
         </div>
-        <span class="${badgeClass}">${service.status}</span>
+        <span class="${badgeClass}">${ticket.status}</span>
       </li>
     `;
   }).join('');
 }
 
-/* --- Control de Dropdown Menú & Modal --- */
+function openTicketModal(serviceId = null) {
+  const modal = document.getElementById('ticket-modal');
+  const serviceSelect = document.getElementById('ticket-service-id');
+  
+  if (window.customerServicesList && window.customerServicesList.length > 0) {
+    serviceSelect.innerHTML = `<option value="">-- General / Consulta global --</option>` +
+      window.customerServicesList.map(s => `<option value="${s.id}">${s.title}</option>`).join('');
+  }
+
+  if (serviceId) {
+    serviceSelect.value = serviceId;
+  }
+
+  document.getElementById('ticket-form').reset();
+  document.getElementById('ticket-response-msg').innerText = '';
+  modal.classList.remove('hidden');
+}
+
+function closeTicketModal() {
+  const modal = document.getElementById('ticket-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function openTicketFromService() {
+  if (currentSelectedService) {
+    const serviceId = currentSelectedService.id;
+    closeServiceModal();
+    openTicketModal(serviceId);
+  }
+}
+
+async function handleCreateTicket(event) {
+  event.preventDefault();
+  
+  const submitBtn = document.getElementById('btn-submit-ticket');
+  const msgDiv = document.getElementById('ticket-response-msg');
+
+  const serviceId = document.getElementById('ticket-service-id').value || null;
+  const subject = document.getElementById('ticket-subject').value.trim();
+  const priority = document.getElementById('ticket-priority').value;
+  const message = document.getElementById('ticket-message').value.trim();
+
+  const { data: { session } } = await _supabase.auth.getSession();
+  if (!session) return;
+
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Enviando...";
+  msgDiv.style.color = "var(--text-muted)";
+  msgDiv.innerText = "Guardando solicitud...";
+
+  const { error } = await _supabase
+    .from('tickets')
+    .insert([
+      {
+        user_id: session.user.id,
+        service_id: serviceId,
+        subject: subject,
+        priority: priority,
+        message: message,
+        status: 'Abierto'
+      }
+    ]);
+
+  submitBtn.disabled = false;
+  submitBtn.innerText = "Enviar Ticket";
+
+  if (error) {
+    console.error("Error al crear ticket:", error);
+    msgDiv.style.color = "var(--danger)";
+    msgDiv.innerText = "Error al enviar: " + error.message;
+  } else {
+    msgDiv.style.color = "var(--accent)";
+    msgDiv.innerText = "¡Ticket enviado con éxito!";
+    await loadCustomerTickets();
+    setTimeout(() => {
+      closeTicketModal();
+    }, 1200);
+  }
+}
+
+/* --- CONTROL DE DROPDOWN Y MODAL DE PERFIL --- */
+
 function toggleUserMenu() {
   const dropdown = document.getElementById('user-dropdown');
-  dropdown.classList.toggle('hidden');
+  if (dropdown) dropdown.classList.toggle('hidden');
 }
 
 document.addEventListener('click', (e) => {
@@ -166,7 +250,8 @@ document.addEventListener('click', (e) => {
 });
 
 function openProfileModal() {
-  document.getElementById('user-dropdown').classList.add('hidden');
+  const dropdown = document.getElementById('user-dropdown');
+  if (dropdown) dropdown.classList.add('hidden');
   document.getElementById('profile-modal').classList.remove('hidden');
 }
 
@@ -188,7 +273,7 @@ async function handleUpdateProfile() {
   msgDiv.style.color = 'var(--text-muted)';
   msgDiv.innerText = "Guardando...";
 
-  const { data, error } = await _supabase.auth.updateUser({
+  const { error } = await _supabase.auth.updateUser({
     data: { full_name: newName }
   });
 
@@ -209,7 +294,7 @@ async function handleResetPassword() {
   msgDiv.style.color = 'var(--text-muted)';
   msgDiv.innerText = "Enviando correo...";
 
-  const { data, error } = await _supabase.auth.resetPasswordForEmail(currentUserEmail, {
+  const { error } = await _supabase.auth.resetPasswordForEmail(currentUserEmail, {
     redirectTo: window.location.origin + '/index.html'
   });
 
