@@ -50,12 +50,12 @@ portal-clientes/
 
 ## Base de Datos y Seguridad (Supabase / PostgreSQL)
 
-El proyecto utiliza **PostgreSQL** alojado en Supabase con políticas de **Row Level Security (RLS)** para garantizar que cada cliente autenticado acceda exclusivamente a sus propios datos.
+El proyecto utiliza **PostgreSQL** alojado en Supabase con políticas de **Row Level Security (RLS)** para garantizar que cada cliente accedá exclusivamente a sus datos.
 
-### Esquema de la Tabla `services`
+### Esquema de la Base de Datos
 
 ```sql
--- 1. Crear la tabla de servicios con información extendida
+-- Tabla de Servicios
 CREATE TABLE services (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
@@ -68,16 +68,26 @@ CREATE TABLE services (
   external_link TEXT
 );
 
--- 2. Habilitar seguridad a nivel de fila (RLS)
+-- Tabla de Tickets de Soporte
+CREATE TABLE tickets (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  service_id UUID REFERENCES services(id) ON DELETE SET NULL,
+  subject TEXT NOT NULL,
+  message TEXT NOT NULL,
+  priority TEXT DEFAULT 'Media',
+  status TEXT DEFAULT 'Abierto'
+);
+
+-- Habilitar Row Level Security (RLS)
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tickets ENABLE ROW LEVEL SECURITY;
 
--- 3. Política de lectura exclusiva por usuario
-CREATE POLICY "Los usuarios solo ven sus propios servicios" 
-ON services 
-FOR SELECT 
-USING (auth.uid() = user_id);
-
-
+-- Políticas de RLS
+CREATE POLICY "Los usuarios ven solo sus propios servicios" ON services FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Los usuarios ven solo sus propios tickets" ON tickets FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Los usuarios insertan sus propios tickets" ON tickets FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 Autor
 Creado por Pablo Uriel Alvarez
