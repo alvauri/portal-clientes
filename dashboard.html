@@ -41,36 +41,21 @@
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL: SERVICIOS -->
-  <main class="dashboard-card">
-    <h1>Área Exclusiva de Cliente</h1>
-    <p class="card-subtitle">Estado actual de tus servicios y proyectos activos.</p>
+<!-- CONTENIDO PRINCIPAL: SERVICIOS -->
+<main class="dashboard-card">
+  <h1>Área Exclusiva de Cliente</h1>
+  <p class="card-subtitle">
+    Sesión iniciada como: <strong id="user-email" style="color: var(--accent);">cargando...</strong>
+  </p>
 
-    <ul class="service-list">
-      <li>
-        <div class="service-item">
-          <span class="material-symbols-outlined icon">language</span>
-          <span>Desarrollo Web & SEO Local</span>
-        </div>
-        <span class="badge">En Producción</span>
-      </li>
-      <li>
-        <div class="service-item">
-          <span class="material-symbols-outlined icon">verified_user</span>
-          <span>Certificado SSL & DNS</span>
-        </div>
-        <span class="badge active">Activo</span>
-      </li>
-      <li>
-        <div class="service-item">
-          <span class="material-symbols-outlined icon">cloud_done</span>
-          <span>Mantenimiento Cloud</span>
-        </div>
-        <span class="badge active">Al día</span>
-      </li>
-    </ul>
-  </main>
-
+  <!-- Lista dinámica conectada a Supabase -->
+<ul class="service-list" id="service-container">
+  <!-- Tarjetas Skeleton animadas mientras carga -->
+  <li class="skeleton-item"></li>
+  <li class="skeleton-item"></li>
+  <li class="skeleton-item"></li>
+</ul>
+</main>
   <!-- MODAL DE PERFIL (Flotante) -->
   <div id="profile-modal" class="modal-overlay hidden">
     <div class="modal-content">

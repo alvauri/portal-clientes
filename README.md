@@ -48,6 +48,34 @@ portal-clientes/
 ├── dashboard.html            # Panel privado del cliente
 └── README.md                 # Documentación del proyecto
 
+## Base de Datos y Seguridad (Supabase / PostgreSQL)
+
+El proyecto utiliza **PostgreSQL** alojado en Supabase con políticas de **Row Level Security (RLS)** para garantizar que cada cliente autenticado acceda exclusivamente a sus propios datos.
+
+### Esquema de la Tabla `services`
+
+```sql
+-- 1. Crear la tabla de servicios
+CREATE TABLE services (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  title TEXT NOT NULL,
+  status TEXT NOT NULL,
+  icon TEXT DEFAULT 'language'
+);
+
+-- 2. Habilitar seguridad a nivel de fila (RLS)
+ALTER TABLE services ENABLE ROW LEVEL SECURITY;
+
+-- 3. Política de lectura exclusiva por usuario
+CREATE POLICY "Los usuarios solo ven sus propios servicios" 
+ON services 
+FOR SELECT 
+USING (auth.uid() = user_id);
+
+
+
 Autor
 Creado por Pablo Uriel Alvarez
 Ingeniería en Sistemas de Información
