@@ -55,14 +55,17 @@ El proyecto utiliza **PostgreSQL** alojado en Supabase con políticas de **Row L
 ### Esquema de la Tabla `services`
 
 ```sql
--- 1. Crear la tabla de servicios
+-- 1. Crear la tabla de servicios con información extendida
 CREATE TABLE services (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   title TEXT NOT NULL,
   status TEXT NOT NULL,
-  icon TEXT DEFAULT 'language'
+  icon TEXT DEFAULT 'language',
+  description TEXT,
+  start_date DATE DEFAULT CURRENT_DATE,
+  external_link TEXT
 );
 
 -- 2. Habilitar seguridad a nivel de fila (RLS)
