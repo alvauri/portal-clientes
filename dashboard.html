@@ -5,22 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel Privado — Portal</title>
   <link rel="stylesheet" href="./assets/css/styles.css">
-  <!-- Carga de Google Material Symbols (Icons) -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body>
+<body class="dashboard-body">
 
-  <main class="dashboard-card">
-    <div class="logo-container">
-      <img src="./assets/img/logo.svg" alt="Logo ualvarez." class="brand-logo">
+  <!-- HEADER NAVEGACIÓN SUPERIOR -->
+  <header class="dashboard-header">
+    <div class="header-logo">
+      <img src="./assets/img/logo.svg" alt="Logo ualvarez." class="brand-logo-sm">
     </div>
 
+    <!-- Avatar y Menú de Usuario -->
+    <div class="user-menu-container">
+      <button id="user-avatar-btn" class="avatar-btn" onclick="toggleUserMenu()">
+        <span class="material-symbols-outlined">account_circle</span>
+      </button>
+
+      <!-- Dropdown Flotante -->
+      <div id="user-dropdown" class="user-dropdown hidden">
+        <div class="dropdown-header">
+          <p class="dropdown-user-name" id="dropdown-name">Cargando...</p>
+          <p class="dropdown-user-email" id="dropdown-email">cargando@mail.com</p>
+        </div>
+        <hr class="dropdown-divider">
+        <button class="dropdown-item" onclick="openProfileModal()">
+          <span class="material-symbols-outlined">person</span>
+          Mi Perfil
+        </button>
+        <button class="dropdown-item danger-text" onclick="handleLogout()">
+          <span class="material-symbols-outlined">logout</span>
+          Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL: SERVICIOS -->
+  <main class="dashboard-card">
     <h1>Área Exclusiva de Cliente</h1>
-    <p style="color: var(--text-muted, #94a3b8); text-align: center;">
-      Sesión iniciada como: <strong id="user-email" style="color: #38bdf8;">cargando...</strong>
-    </p>
+    <p class="card-subtitle">Estado actual de tus servicios y proyectos activos.</p>
 
     <ul class="service-list">
       <li>
@@ -45,14 +69,36 @@
         <span class="badge active">Al día</span>
       </li>
     </ul>
-
-    <div class="btn-group">
-      <button class="danger" onclick="handleLogout()">
-        <span class="material-symbols-outlined icon-btn">logout</span>
-        Cerrar Sesión
-      </button>
-    </div>
   </main>
+
+  <!-- MODAL DE PERFIL (Flotante) -->
+  <div id="profile-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Gestionar Perfil</h3>
+        <button class="modal-close" onclick="closeProfileModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label for="update-fullname">Nombre / Empresa</label>
+          <input type="text" id="update-fullname" placeholder="Tu nombre o empresa" />
+        </div>
+
+        <div class="modal-actions">
+          <button onclick="handleUpdateProfile()" class="btn-primary">
+            <span class="material-symbols-outlined icon-btn">save</span>
+            Guardar Nombre
+          </button>
+          <button onclick="handleResetPassword()" class="btn-secondary">
+            <span class="material-symbols-outlined icon-btn">lock_reset</span>
+            Restablecer Clave
+          </button>
+        </div>
+
+        <div id="profile-message" class="message"></div>
+      </div>
+    </div>
+  </div>
 
   <script src="./assets/js/config.js"></script>
   <script src="./assets/js/dashboard.js"></script>
