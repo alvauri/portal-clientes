@@ -220,3 +220,112 @@ button:active {
     transform: translateY(0);
   }
 }
+
+/* ==========================================
+   ESTILOS PARA EL DASHBOARD
+   ========================================== */
+
+.dashboard-card {
+  background: var(--bg-card, #121824);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 520px;
+  width: 90%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.dashboard-card h1 {
+  font-size: 1.6rem;
+  text-align: center;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+/* Lista de Servicios contratados */
+.service-list {
+  list-style: none;
+  padding: 0;
+  margin: 28px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.service-list li {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.service-list li:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Estilo para el botón de Cerrar Sesión (danger) */
+button.danger {
+  background-color: transparent;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button.danger:hover {
+  background-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Estilos para Íconos de Google Material Icons */
+.service-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.material-symbols-outlined.icon {
+  font-size: 20px;
+  color: #38bdf8; /* Color de acento cian */
+  vertical-align: middle;
+}
+
+/* Badge de estado a la derecha */
+.badge {
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+}
+
+.badge.active {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+/* Ícono dentro del botón */
+button .icon-btn {
+  font-size: 18px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+button.danger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

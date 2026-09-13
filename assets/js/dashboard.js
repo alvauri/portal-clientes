@@ -1,18 +1,31 @@
 // assets/js/dashboard.js
-
-// Validación Funcional: Verificar si hay token activo
 document.addEventListener('DOMContentLoaded', async () => {
-  const { data: { session } } = await _supabase.auth.getSession();
+  // 1. Verificamos la sesión activa en Supabase
+  const { data: { session }, error } = await _supabase.auth.getSession();
   
-  if (!session) {
-    // Si no hay sesión válida, rebota a la pantalla de Login
+  // Guard de seguridad: Si no hay usuario autenticado, redirigimos al login
+  if (error || !session) {
     window.location.href = 'index.html';
-  } else {
-    document.getElementById('user-email').innerText = session.user.email;
+    return;
+  }
+
+  // 2. Extraemos la metadata (Nombre Completo) o usamos el email como fallback
+  const user = session.user;
+  const userName = user.user_metadata?.full_name || user.email;
+
+  // 3. Renderizamos en pantalla
+  const userEmailSpan = document.getElementById('user-email');
+  if (userEmailSpan) {
+    userEmailSpan.innerText = userName;
   }
 });
 
+// Función para cerrar sesión
 async function handleLogout() {
-  await _supabase.auth.signOut();
-  window.location.href = 'index.html';
+  const { error } = await _supabase.auth.signOut();
+  if (error) {
+    alert('Error al cerrar sesión: ' + error.message);
+  } else {
+    window.location.href = 'index.html';
+  }
 }
