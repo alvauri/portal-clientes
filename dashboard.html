@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Privado — Portal</title>
+  <link rel="stylesheet" href="./assets/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <main class="dashboard-card">
+    <h1>🔒 Área Exclusiva de Cliente</h1>
+    <p style="color: var(--text-muted); text-align: center;">
+      Sesión iniciada como: <strong id="user-email" style="color: var(--accent-cyan);">cargando...</strong>
+    </p>
+
+    <ul class="service-list">
+      <li>⚡ <strong>Desarrollo Web & SEO Local:</strong> En Producción</li>
+      <li>🔒 <strong>Certificado SSL & DNS:</strong> Activo</li>
+      <li>📊 <strong>Mantenimiento Cloud:</strong> Al día</li>
+    </ul>
+
+    <div class="btn-group">
+      <button class="danger" onclick="handleLogout()">Cerrar Sesión</button>
+    </div>
+  </main>
+
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/dashboard.js"></script>
+</body>
+</html>

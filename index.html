@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso a Clientes — Portal</title>
+  <link rel="stylesheet" href="./assets/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <main class="login-card">
+
+    <!-- LOGO CORPORATIVO -->
+    <div class="logo-container">
+       <img src="./assets/img/logo.svg" alt="Logo de la Empresa" class="brand-logo">
+    </div>
+    
+    <h2 id="form-title">Iniciar Sesión</h2>
+
+    <!-- Pestañas para alternar de modo -->
+    <div class="tab-group" style="display: flex; gap: 10px; margin-bottom: 20px;">
+      <button id="tab-login" class="secondary active" onclick="switchMode('login')">Ingresar</button>
+      <button id="tab-signup" class="secondary" onclick="switchMode('signup')">Crear cuenta</button>
+    </div>
+
+    <!-- Campo extra para Registro -->
+    <div class="input-group signup-only" style="display: none;">
+      <label for="fullname">Nombre / Empresa</label>
+      <input type="text" id="fullname" placeholder="Ej: Juan Pérez" />
+    </div>
+
+    <div class="input-group">
+      <label for="email">Correo electrónico</label>
+      <input type="email" id="email" placeholder="cliente@empresa.com" required />
+    </div>
+
+    <div class="input-group">
+      <label for="password">Contraseña</label>
+      <input type="password" id="password" placeholder="••••••••" required />
+    </div>
+
+    <!-- Campo extra para Registro -->
+    <div class="input-group signup-only" style="display: none;">
+      <label for="confirm-password">Repetir Contraseña</label>
+      <input type="password" id="confirm-password" placeholder="••••••••" />
+    </div>
+
+    <div class="btn-group">
+      <button id="btn-submit" onclick="handleSubmit()">Iniciar Sesión</button>
+    </div>
+
+    <div id="message" class="message"></div>
+  </main>
+
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/auth.js"></script>
+</body>
+</html>

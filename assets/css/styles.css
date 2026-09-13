@@ -1,0 +1,222 @@
+:root {
+  --bg: #090D16;
+  --card: #1E293B;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #F8FAFC;
+  --text-muted: #94A3B8;
+  --accent: #6366F1;
+  --accent-cyan: #38BDF8;
+  --danger: #EF4444;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.login-card, .dashboard-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.dashboard-card {
+  max-width: 600px;
+}
+
+h2, h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #0F172A;
+  color: var(--text);
+  font-size: 15px;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+button:hover { opacity: 0.9; }
+
+button.secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+button.danger {
+  background: var(--danger);
+}
+
+.message {
+  margin-top: 16px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--accent-cyan);
+  min-height: 20px;
+}
+
+.service-list {
+  list-style: none;
+  margin: 20px 0;
+}
+
+.service-list li {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.tab-group button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* Control de tamaño del Logo */
+.logo-container {
+  text-align: center;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.brand-logo {
+  /* Limitamos el ancho para que no rompa la tarjeta */
+  max-width: 140px; 
+  width: 100%;
+  height: auto;
+  display: inline-block;
+  object-fit: contain;
+  border-radius: 8px; /* Opcional: suaviza las esquinas */
+}
+
+/* ==========================================
+   ANIMACIONES Y MICROINTERACCIONES
+   ========================================== */
+
+/* 1. Animación de entrada de la tarjeta */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-card {
+  /* Aplicamos la animación al cargar la vista */
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 2. Animación suave del Logo */
+.brand-logo {
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.brand-logo:hover {
+  transform: scale(1.04);
+}
+
+/* 3. Transiciones en Inputs y Botones */
+input {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #5c6ac4; /* O tu color de acento */
+  box-shadow: 0 0 0 3px rgba(92, 106, 196, 0.25);
+}
+
+button {
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* 4. Transición entre pestañas (Ingresar / Crear cuenta) */
+.tab-group button {
+  transition: all 0.25s ease-in-out;
+}
+
+/* 5. Aparecido suave para los campos dinámicos de Registro */
+.signup-only {
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
